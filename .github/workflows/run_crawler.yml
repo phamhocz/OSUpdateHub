@@ -30,3 +30,12 @@ jobs:
           git add updates.json
           git commit -m "Cập nhật dữ liệu OS mới nhất" || exit 0
           git push
+# ... (giữ nguyên các bước trước)
+      - name: 🚀 Deploy to Hosting via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /public_html/OS # Thư mục chứa web trên hosting của bạn

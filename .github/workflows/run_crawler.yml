@@ -1,0 +1,32 @@
+name: Update OS Data
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Chạy tự động mỗi 6 tiếng
+  workflow_dispatch: # Cho phép bấm nút chạy thủ công
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run crawler
+        run: python main.py
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name "Bot Cập Nhật"
+          git config --global user.email "bot@github.com"
+          git add updates.json
+          git commit -m "Cập nhật dữ liệu OS mới nhất" || exit 0
+          git push

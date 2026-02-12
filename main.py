@@ -1,10 +1,9 @@
 import requests
-from bs4 import BeautifulSoup
 import json
 import xml.etree.ElementTree as ET
 
 def get_real_updates():
-    # Sử dụng RSS Feed của GSMArena để lấy tin mới nhất về Software/OS
+    # Sử dụng RSS Feed của GSMArena để lấy tin mới nhất về Phần mềm/OS
     RSS_URL = "https://www.gsmarena.com/rss-news-software.php3"
     
     headers = {
@@ -13,50 +12,50 @@ def get_real_updates():
 
     try:
         response = requests.get(RSS_URL, headers=headers)
-        # Parse XML từ RSS
+        # Parse XML từ RSS Feed
         root = ET.fromstring(response.content)
         
         updates_list = []
         
-        # Duyệt qua các tin tức mới nhất (item)
-        for item in root.findall('./channel/item')[:10]: # Lấy 10 tin mới nhất
+        # Duyệt qua 12 tin tức mới nhất
+        for item in root.findall('./channel/item')[:12]: 
             title = item.find('title').text
             link = item.find('link').text
             pub_date = item.find('pubDate').text
             
-            # Phân loại đơn giản dựa trên tiêu đề tin tức
-            brand = "Tech News"
-            if "iOS" in title or "iPhone" in title:
+            # Phân loại hãng dựa trên từ khóa trong tiêu đề
+            brand = "Công nghệ"
+            title_lower = title.lower()
+            
+            if any(x in title_lower for x in ["ios", "iphone", "apple", "ipad"]):
                 brand = "Apple"
-            elif "Samsung" in title or "One UI" in title:
+            elif any(x in title_lower for x in ["samsung", "one ui", "galaxy"]):
                 brand = "Samsung"
-            elif "Xiaomi" in title or "HyperOS" in title:
+            elif any(x in title_lower for x in ["xiaomi", "hyperos", "redmi"]):
                 brand = "Xiaomi"
-            elif "Android" in title:
+            elif any(x in title_lower for x in ["android", "google", "pixel"]):
                 brand = "Google"
+            elif "oppo" in title_lower:
+                brand = "Oppo"
 
             updates_list.append({
                 "brand": brand,
-                "device": title, # Tiêu đề bài báo thường chứa tên thiết bị
-                "version": "Check link for details",
+                "title": title,
                 "date": pub_date,
-                "link": link,
-                "status": "Latest Update"
+                "link": link
             })
             
         return updates_list
     except Exception as e:
-        print(f"Lỗi khi cào dữ liệu: {e}")
+        print(f"Lỗi: {e}")
         return []
 
 def save_to_json(data):
     if data:
         with open('updates.json', 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        print(f"Đã cập nhật {len(data)} tin tức mới nhất vào updates.json")
-    else:
-        print("Không có dữ liệu mới để lưu.")
+        print(f"Thành công! Đã lưu {len(data)} tin vào updates.json")
 
 if __name__ == "__main__":
-    news_data = get_real_updates()
-    save_to_json(news_data)
+    data = get_real_updates()
+    save_to_json(data)

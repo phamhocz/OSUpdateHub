@@ -1,0 +1,14 @@
+[
+    {
+        "brand": "Samsung",
+        "device": "Galaxy S24 Ultra",
+        "version": "One UI 8",
+        "status": "Stable"
+    },
+    {
+        "brand": "Apple",
+        "device": "iPhone 15 Pro",
+        "version": "iOS 19",
+        "status": "Stable"
+    }
+]
